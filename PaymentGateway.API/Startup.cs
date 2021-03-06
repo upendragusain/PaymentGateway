@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PaymentGateway.API.Application.Commands;
 using PaymentGateway.API.Filters;
+using PaymentGateway.API.Integration.Bank;
+using PaymentGateway.Domain;
+using PaymentGateway.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +34,22 @@ namespace PaymentGateway.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<PaymentGatewayContext>(options =>
+            {
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("PaymentGatewayContext"));
+            });
+
+            services.AddScoped<IAquiringBankApiService, AquiringBankApiService>();
+            services.AddScoped<IChargeRepository, ChargeRepository>();
+
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            })
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
 
             services.AddMediatR(typeof(Startup));

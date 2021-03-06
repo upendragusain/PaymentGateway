@@ -35,7 +35,7 @@ namespace PaymentGateway.API.Filters
                     Detail = "Please refer to the errors property for additional details."
                 };
 
-                if (context.Exception.GetType() == typeof(PaymentDomainException))
+                if (context.Exception.GetType() == typeof(PaymentGatewayDomainException))
                 {
                     problemDetails.Status = StatusCodes.Status400BadRequest;
                     problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
