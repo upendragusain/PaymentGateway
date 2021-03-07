@@ -48,25 +48,21 @@ namespace PaymentGateway.Domain
         public Guid IdempotencyKey { get; private set; }
 
         public Guid PaymentResponseId { get; private set; }
-        public PaymentStatus Status { get; private set; }
-        public int FailureCode { get; private set; }
-
-        [StringLength(100)]
-        public string FailureMesage { get; private set; }
+        public string Status { get; private set; }
+        public string FailureCode { get; private set; }
 
         public Guid MerchantId { get; set; }
         public Merchant Merchant { get; set; }
 
         public void AddPaymentResponse(
             Guid id,
-            PaymentStatus status,
-            int failureCode,
-            string failureMesage)
+            string status,
+            string failureCode)
         {
+            //todo: make sure status and failurecode agree!
             PaymentResponseId = id;
             Status = status;
             FailureCode = failureCode;
-            FailureMesage = failureMesage;
         }
     }
 
@@ -74,14 +70,14 @@ namespace PaymentGateway.Domain
     {
         protected Card()
         {
-
+            _charges = new List<Charge>();
         }
 
         public Card(
             Brand brand,
             byte expiryMonth,
             int expiryYear,
-            string lastFourDigits,
+            string number,
             int cvv,
             bool is3DSecure)
         {
@@ -95,9 +91,9 @@ namespace PaymentGateway.Domain
                 throw new PaymentGatewayDomainException($"invalid {nameof(ExpiryYear)}");
             }
 
-            if (lastFourDigits.Length > 4)
+            if (number.Length < 12 || number.Length > 19)
             {
-                throw new PaymentGatewayDomainException($"invalid {nameof(lastFourDigits)}");
+                throw new PaymentGatewayDomainException($"invalid {nameof(number)}");
             }
 
             if (cvv <= 0)
@@ -108,23 +104,37 @@ namespace PaymentGateway.Domain
             Brand = brand;
             ExpiryMonth = expiryMonth;
             ExpiryYear = expiryYear;
-            LastFourDigits = lastFourDigits;
+            Number = number;
             Cvv = cvv;
 
             Is3DSecure = is3DSecure;
+
+            Id = Guid.NewGuid();
+            DateTimeCreated = DateTime.UtcNow;
+            DateTimeUpdated = null;
+
         }
 
         public Brand Brand { get; private set; }
         public byte ExpiryMonth { get; private set; }
         public int ExpiryYear { get; private set; }
 
-        [StringLength(4)]
-        public string LastFourDigits { get; private set; }
+        public string Number { get; private set; }
         public int Cvv { get; private set; }
         public bool Is3DSecure { get; private set; }
 
-        public Charge Charge { get; private set; }
-        public Guid MerchantId { get; set; }
+        private readonly List<Charge> _charges;
+        public IReadOnlyCollection<Charge> Charges => _charges;
+
+        public void Encrypt(IEncryptionService encryptionService)
+        {
+            Number = Convert.ToBase64String(encryptionService.Encrypt(Number));
+        }
+
+        public void Decrypt(IEncryptionService encryptionService)
+        {
+            Number = encryptionService.Decrypt(Convert.FromBase64String(Number));
+        }
     }
 
     public class Merchant : Entity
@@ -180,11 +190,24 @@ namespace PaymentGateway.Domain
         AMEX
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum PaymentStatus
-    {
-        Succeeded,
-        Pending,
-        Failed
-    }
+    //[JsonConverter(typeof(JsonStringEnumConverter))]
+    //public enum PaymentStatus
+    //{
+    //    Succeeded,
+    //    Pending,
+    //    Failed
+    //}
+
+    //[JsonConverter(typeof(JsonStringEnumConverter))]
+    //public enum FailureReason
+    //{
+    //    none = 0,
+    //    account_number_invalid,
+    //    amount_too_large,
+    //    authentication_required,
+    //    card_decline_rate_limit_exceeded,
+    //    country_code_invalid,
+    //    expired_card,
+    //    invalid_cvc
+    //}
 }

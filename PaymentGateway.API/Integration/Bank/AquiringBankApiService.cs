@@ -5,11 +5,14 @@ namespace PaymentGateway.API.Integration.Bank
 {
     public class AquiringBankApiService : IAquiringBankApiService
     {
-        public async Task<BankPaymentResponse> RequestPayment(
+        public async Task<PaymentResponse> RequestPayment(
             BankPaymentRequest bankPaymentRequest)
         {
             //simulate the bank
-            return await Task.FromResult(new BankPaymentResponse(Guid.NewGuid(), Domain.PaymentStatus.Succeeded, 1, null));
+            return await Task.FromResult(
+                new PaymentResponse(Guid.NewGuid(), 
+                "Succeeded", 
+                null));
         }
     }
 }

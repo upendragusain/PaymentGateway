@@ -22,11 +22,6 @@ namespace PaymentGateway.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Charge>()
-               .HasOne(a => a.Card)
-               .WithOne(b => b.Charge)
-               .HasForeignKey<Card>(b => new { b.MerchantId, b.Id });
-
-            modelBuilder.Entity<Charge>()
                .HasKey(p => new { p.MerchantId, p.Id });
         }
     }

@@ -22,6 +22,7 @@ namespace PaymentGateway.Infrastructure.Migrations
             modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Brand")
@@ -45,17 +46,10 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<bool>("Is3DSecure")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastFourDigits")
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Number")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MerchantId", "Id")
-                        .IsUnique();
 
                     b.ToTable("Cards");
                 });
@@ -71,6 +65,9 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(19,4)");
 
+                    b.Property<Guid?>("CardId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Currency")
                         .HasColumnType("int");
 
@@ -80,12 +77,8 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTime?>("DateTimeUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FailureCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FailureMesage")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("FailureCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("IdempotencyKey")
                         .HasColumnType("uniqueidentifier");
@@ -93,10 +86,12 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<Guid>("PaymentResponseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MerchantId", "Id");
+
+                    b.HasIndex("CardId");
 
                     b.ToTable("Charges");
                 });
@@ -126,31 +121,26 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.ToTable("Merchant");
                 });
 
-            modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
-                {
-                    b.HasOne("PaymentGateway.Domain.Charge", "Charge")
-                        .WithOne("Card")
-                        .HasForeignKey("PaymentGateway.Domain.Card", "MerchantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Charge");
-                });
-
             modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
                 {
+                    b.HasOne("PaymentGateway.Domain.Card", "Card")
+                        .WithMany("Charges")
+                        .HasForeignKey("CardId");
+
                     b.HasOne("PaymentGateway.Domain.Merchant", "Merchant")
                         .WithMany("Charges")
                         .HasForeignKey("MerchantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Card");
+
                     b.Navigation("Merchant");
                 });
 
-            modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
+            modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
                 {
-                    b.Navigation("Card");
+                    b.Navigation("Charges");
                 });
 
             modelBuilder.Entity("PaymentGateway.Domain.Merchant", b =>

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PaymentGateway.API.Application;
 using PaymentGateway.API.Application.Commands;
 using PaymentGateway.API.Filters;
 using PaymentGateway.API.Integration.Bank;
@@ -42,6 +43,7 @@ namespace PaymentGateway.API
 
             services.AddScoped<IAquiringBankApiService, AquiringBankApiService>();
             services.AddScoped<IChargeRepository, ChargeRepository>();
+            services.AddScoped<IEncryptionService, AESEncryptionService>();
 
             services.AddControllers(options =>
             {

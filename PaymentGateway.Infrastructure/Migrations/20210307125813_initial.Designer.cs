@@ -10,8 +10,8 @@ using PaymentGateway.Infrastructure;
 namespace PaymentGateway.Infrastructure.Migrations
 {
     [DbContext(typeof(PaymentGatewayContext))]
-    [Migration("20210306145904_simplify_schema")]
-    partial class simplify_schema
+    [Migration("20210307125813_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,7 @@ namespace PaymentGateway.Infrastructure.Migrations
             modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Brand")
@@ -35,7 +36,7 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTime>("DateTimeCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateTimeUpdated")
+                    b.Property<DateTime?>("DateTimeUpdated")
                         .HasColumnType("datetime2");
 
                     b.Property<byte>("ExpiryMonth")
@@ -47,8 +48,8 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<bool>("Is3DSecure")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LastFourDigits")
-                        .HasColumnType("int");
+                    b.Property<string>("Number")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -57,12 +58,17 @@ namespace PaymentGateway.Infrastructure.Migrations
 
             modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
                 {
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(19,4)");
+
+                    b.Property<Guid?>("CardId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Currency")
                         .HasColumnType("int");
@@ -70,30 +76,24 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTime>("DateTimeCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateTimeUpdated")
+                    b.Property<DateTime?>("DateTimeUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FailureCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FailureMesage")
+                    b.Property<string>("FailureCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("IdempotencyKey")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PaymentResponseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("MerchantId", "Id");
 
-                    b.HasIndex("MerchantId");
+                    b.HasIndex("CardId");
 
                     b.ToTable("Charges");
                 });
@@ -107,45 +107,42 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTime>("DateTimeCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateTimeUpdated")
+                    b.Property<DateTime?>("DateTimeUpdated")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("PostalCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Merchant");
                 });
 
-            modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
-                {
-                    b.HasOne("PaymentGateway.Domain.Charge", "Charge")
-                        .WithOne("Card")
-                        .HasForeignKey("PaymentGateway.Domain.Card", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Charge");
-                });
-
             modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
                 {
+                    b.HasOne("PaymentGateway.Domain.Card", "Card")
+                        .WithMany("Charges")
+                        .HasForeignKey("CardId");
+
                     b.HasOne("PaymentGateway.Domain.Merchant", "Merchant")
                         .WithMany("Charges")
                         .HasForeignKey("MerchantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Card");
+
                     b.Navigation("Merchant");
                 });
 
-            modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
+            modelBuilder.Entity("PaymentGateway.Domain.Card", b =>
                 {
-                    b.Navigation("Card");
+                    b.Navigation("Charges");
                 });
 
             modelBuilder.Entity("PaymentGateway.Domain.Merchant", b =>
