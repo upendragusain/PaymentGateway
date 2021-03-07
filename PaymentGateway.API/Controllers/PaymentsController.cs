@@ -26,7 +26,7 @@ namespace PaymentGateway.API.Controllers
 
         [Route("create")]
         [HttpPost]
-        [ProducesResponseType(typeof(PaymentResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> MakeChargeAsync(
             [FromBody] CreateChargeCommand createChargeCommand)
@@ -43,7 +43,7 @@ namespace PaymentGateway.API.Controllers
 
         [Route("get")]
         [HttpGet]
-        [ProducesResponseType(typeof(Charge), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(PaymentDetail), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetChargById(Guid merchantId, Guid id)
@@ -62,12 +62,12 @@ namespace PaymentGateway.API.Controllers
                 chargeQuery.MerchantId,
                 chargeQuery.Id);
 
-            var charge = await _mediator.Send(chargeQuery);
+            var paymentDetail = await _mediator.Send(chargeQuery);
 
-            if (charge == null)
+            if (paymentDetail == null)
                 return NotFound();
 
-            return Ok(charge);
+            return Ok(paymentDetail);
         }
     }
 }

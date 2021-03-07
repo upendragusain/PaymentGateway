@@ -5,7 +5,7 @@ using System;
 
 namespace PaymentGateway.API.Application.Commands
 {
-    public class CreateChargeCommand : IRequest<PaymentResponse>
+    public class CreateChargeCommand : IRequest<string>
     {
         public Guid MerchantId { get; set; }
         public decimal Amount { get; set; }

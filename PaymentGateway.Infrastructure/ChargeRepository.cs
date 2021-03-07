@@ -11,7 +11,8 @@ namespace PaymentGateway.Infrastructure
         private readonly PaymentGatewayContext _context;
         private readonly IEncryptionService _encryptionService;
 
-        public ChargeRepository(PaymentGatewayContext context, IEncryptionService encryptionService)
+        public ChargeRepository(PaymentGatewayContext context,
+                                IEncryptionService encryptionService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _encryptionService = encryptionService ?? throw new ArgumentNullException(nameof(encryptionService));

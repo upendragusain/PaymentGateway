@@ -102,10 +102,10 @@ namespace PaymentGateway.Domain
             }
 
             Brand = brand;
-            ExpiryMonth = expiryMonth;
-            ExpiryYear = expiryYear;
+            ExpiryMonth = expiryMonth.ToString();
+            ExpiryYear = expiryYear.ToString();
             Number = number;
-            Cvv = cvv;
+            Cvv = cvv.ToString();
 
             Is3DSecure = is3DSecure;
 
@@ -116,12 +116,22 @@ namespace PaymentGateway.Domain
         }
 
         public Brand Brand { get; private set; }
-        public byte ExpiryMonth { get; private set; }
-        public int ExpiryYear { get; private set; }
-
+        public string ExpiryMonth { get; private set; }
+        public string ExpiryYear { get; private set; }
         public string Number { get; private set; }
-        public int Cvv { get; private set; }
+        public string Cvv { get; private set; }
         public bool Is3DSecure { get; private set; }
+
+        [NotMapped]
+        public string LastFourDigits
+        {
+            get
+            {
+                if (Number.Length < 4)
+                    return Number;
+                return Number.Substring(Number.Length - 4);
+            }
+        }
 
         private readonly List<Charge> _charges;
         public IReadOnlyCollection<Charge> Charges => _charges;
@@ -129,11 +139,17 @@ namespace PaymentGateway.Domain
         public void Encrypt(IEncryptionService encryptionService)
         {
             Number = Convert.ToBase64String(encryptionService.Encrypt(Number));
+            ExpiryMonth = Convert.ToBase64String(encryptionService.Encrypt(ExpiryMonth));
+            ExpiryYear = Convert.ToBase64String(encryptionService.Encrypt(ExpiryYear));
+            Cvv = Convert.ToBase64String(encryptionService.Encrypt(Cvv));
         }
 
         public void Decrypt(IEncryptionService encryptionService)
         {
             Number = encryptionService.Decrypt(Convert.FromBase64String(Number));
+            ExpiryMonth = encryptionService.Decrypt(Convert.FromBase64String(ExpiryMonth));
+            ExpiryYear = encryptionService.Decrypt(Convert.FromBase64String(ExpiryYear));
+            Cvv = encryptionService.Decrypt(Convert.FromBase64String(Cvv));
         }
     }
 

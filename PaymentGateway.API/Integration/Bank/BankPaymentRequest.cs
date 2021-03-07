@@ -7,10 +7,10 @@ namespace PaymentGateway.API.Integration.Bank
         public BankPaymentRequest(decimal amount,
                                   Currency currencyCode,
                                   Brand brand,
-                                  byte expiryMonth,
-                                  int expiryYear,
+                                  string expiryMonth,
+                                  string expiryYear,
                                   string lastFourDigits,
-                                  int cvv)
+                                  string cvv)
         {
             this.Amount = amount;
             this.CurrencyCode = currencyCode;
@@ -25,9 +25,9 @@ namespace PaymentGateway.API.Integration.Bank
         public Currency CurrencyCode { get; set; }
 
         public Brand Brand { get; set; }
-        public byte ExpiryMonth { get; set; }
-        public int ExpiryYear { get; set; }
+        public string ExpiryMonth { get; set; }
+        public string ExpiryYear { get; set; }
         public string LastFourDigits { get; set; }
-        public int CVV { get; set; }
+        public string CVV { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaymentGateway.API.Application.Queries
 {
-    public class ChargeQueryHandler : IRequestHandler<ChargeQuery, Charge>
+    public class ChargeQueryHandler : IRequestHandler<ChargeQuery, PaymentDetail>
     {
         public IChargeRepository _chargeRepository { get; }
 
@@ -15,9 +15,18 @@ namespace PaymentGateway.API.Application.Queries
             _chargeRepository = chargeRepository ?? throw new ArgumentNullException(nameof(chargeRepository));
         }
 
-        public async Task<Charge> Handle(ChargeQuery request, CancellationToken cancellationToken)
+        public async Task<PaymentDetail> Handle(ChargeQuery request, CancellationToken cancellationToken)
         {
-            return await _chargeRepository.Get(request.MerchantId, request.Id);
+            var charge = await _chargeRepository.Get(request.MerchantId, request.Id);
+            return new PaymentDetail()
+            {
+                Id = charge.Id,
+                MerchantId = charge.MerchantId,
+                ExpiryMonth = charge.Card.ExpiryMonth,
+                ExpiryYear = charge.Card.ExpiryYear,
+                LastFourDigits = charge.Card.LastFourDigits,
+                Status = charge.Status
+            };
         }
     }
 }

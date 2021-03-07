@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PaymentGateway.API.Application.Commands
 {
     public class CreateChargeCommandHandler
-                : IRequestHandler<CreateChargeCommand, PaymentResponse>
+                : IRequestHandler<CreateChargeCommand, string>
     {
         private readonly IMediator _mediator;
         private readonly IAquiringBankApiService _aquiringBankApiService;
@@ -23,7 +23,7 @@ namespace PaymentGateway.API.Application.Commands
             _chargeRepository = chargeRepository ?? throw new ArgumentNullException(nameof(chargeRepository));
         }
 
-        public async Task<PaymentResponse> Handle(CreateChargeCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateChargeCommand request, CancellationToken cancellationToken)
         {
             var card = new Card(request.Brand,
                                 request.ExpiryMonth,
@@ -53,11 +53,10 @@ namespace PaymentGateway.API.Application.Commands
                                       paymentResponse.FailureCode);
 
             //persist to db
-            //todo: encrypt card details before persisting to disk!
             await _chargeRepository.Create(charge);
 
             //return response
-            return paymentResponse;
+            return paymentResponse.Status;
         }
     }
 }
