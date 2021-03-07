@@ -25,13 +25,14 @@ namespace PaymentGateway.Infrastructure
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<Charge> Get(Guid merchantId, Guid id)
+        public async Task<Charge> Get(Guid id)
         {
             var charge = await _context.Charges
                 .Include(x => x.Card)
-                .SingleAsync(x => 
-                x.MerchantId == merchantId 
-                && x.Id == id);
+                .FirstOrDefaultAsync(_ => _.Id == id);
+
+            if (charge == null)
+                return charge;
 
             charge.Card.Decrypt(_encryptionService);
 

@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using PaymentGateway.API.Application;
 using PaymentGateway.Domain;
 
 namespace PaymentGateway.Test

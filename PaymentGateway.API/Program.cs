@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PaymentGateway.API.Extensions;
+using PaymentGateway.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,11 @@ namespace PaymentGateway.API
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+
+                host.MigrateDbContext<PaymentGatewayContext>(Seeder.Seed);
+
+                host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

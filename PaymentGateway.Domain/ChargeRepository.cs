@@ -8,7 +8,7 @@ namespace PaymentGateway.Domain
     {
         Task<int> Create(Charge charge);
 
-        Task<Charge> Get(Guid merchantId, Guid id);
+        Task<Charge> Get(Guid id);
 
         Task<IEnumerable<Charge>> GetList(Guid merchantId, DateTime date);
     }

@@ -18,19 +18,23 @@ namespace PaymentGateway.Domain
             decimal amount,
             Currency currency,
             Card card,
-            Guid idempotencyKey,
-            Guid merchantId)
+            Guid idempotencyKey)
         {
             Card = card ?? throw new ArgumentNullException(nameof(card));
 
-            if (amount <= Constants.CHARGE_AMOUNT_MIN || amount >= Constants.CHARGE_AMOUNT_MAX)
+            if (amount < Constants.CHARGE_AMOUNT_MIN || amount > Constants.CHARGE_AMOUNT_MAX)
                 // wonder if it's safe to disclose the limits here?
                 throw new PaymentGatewayDomainException($"invalid {nameof(amount)}");
 
             Amount = amount;
             Currency = currency;
 
-            MerchantId = merchantId;
+            //HACK: this should ideally be extracted from Auth token claims etc when identity layer is added
+            MerchantId = new Guid("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
+
+            // ToDo: save the result of the first request made for any given idempotency key,
+            // regardless of whether it succeeded or failed.
+            // Subsequent requests with the same key should return the same result
             IdempotencyKey = idempotencyKey;
 
             Id = Guid.NewGuid();
@@ -75,7 +79,7 @@ namespace PaymentGateway.Domain
 
         public Card(
             Brand brand,
-            byte expiryMonth,
+            int expiryMonth,
             int expiryYear,
             string number,
             int cvv,
@@ -83,22 +87,22 @@ namespace PaymentGateway.Domain
         {
             if (expiryMonth <= 0 || expiryMonth > 12)
             {
-                throw new PaymentGatewayDomainException($"invalid {nameof(expiryMonth)}");
+                throw new PaymentGatewayDomainException(nameof(expiryMonth));
             }
 
             if (expiryYear < DateTime.UtcNow.Year)// todo: more logic here for around midnight dec 31!
             {
-                throw new PaymentGatewayDomainException($"invalid {nameof(ExpiryYear)}");
+                throw new PaymentGatewayDomainException(nameof(ExpiryYear));
             }
 
             if (number.Length < 12 || number.Length > 19)
             {
-                throw new PaymentGatewayDomainException($"invalid {nameof(number)}");
+                throw new PaymentGatewayDomainException(nameof(number));
             }
 
             if (cvv <= 0)
             {
-                throw new PaymentGatewayDomainException($"invalid {nameof(cvv)}");
+                throw new PaymentGatewayDomainException(nameof(cvv));
             }
 
             Brand = brand;
@@ -161,11 +165,16 @@ namespace PaymentGateway.Domain
         }
 
         public Merchant(
+            Guid id,
             string name,
             string postalCode)
         {
+            Id = id;
             Name = string.IsNullOrWhiteSpace(name) ? throw new ArgumentNullException(nameof(name)) : name;
-            PostalCode = string.IsNullOrWhiteSpace(PostalCode) ? throw new ArgumentNullException(nameof(PostalCode)) : PostalCode;
+            PostalCode = string.IsNullOrWhiteSpace(postalCode) ? throw new ArgumentNullException(nameof(postalCode)) : postalCode;
+
+            DateTimeCreated = DateTime.UtcNow;
+            DateTimeUpdated = null;
         }
 
         [StringLength(300)]

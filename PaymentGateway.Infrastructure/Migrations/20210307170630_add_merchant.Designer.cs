@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentGateway.Infrastructure;
 
 namespace PaymentGateway.Infrastructure.Migrations
 {
     [DbContext(typeof(PaymentGatewayContext))]
-    partial class PaymentGatewayContextModelSnapshot : ModelSnapshot
+    [Migration("20210307170630_add_merchant")]
+    partial class add_merchant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,8 +58,10 @@ namespace PaymentGateway.Infrastructure.Migrations
 
             modelBuilder.Entity("PaymentGateway.Domain.Charge", b =>
                 {
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
@@ -81,20 +85,15 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<Guid>("IdempotencyKey")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MerchantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("PaymentResponseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("MerchantId", "Id");
 
                     b.HasIndex("CardId");
-
-                    b.HasIndex("MerchantId");
 
                     b.ToTable("Charges");
                 });

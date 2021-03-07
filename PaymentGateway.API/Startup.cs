@@ -20,6 +20,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using PaymentGateway.API.Application.Validations;
 
 namespace PaymentGateway.API
 {
@@ -45,10 +48,14 @@ namespace PaymentGateway.API
             services.AddScoped<IChargeRepository, ChargeRepository>();
             services.AddScoped<IEncryptionService, AESEncryptionService>();
 
+            services.AddTransient<IValidator<CreateChargeCommand>, CreateChargeCommandValidator>();
+
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
             })
+                .AddFluentValidation()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;

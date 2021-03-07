@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using PaymentGateway.API.Integration.Bank;
 using PaymentGateway.Domain;
 using System;
 
@@ -7,12 +6,11 @@ namespace PaymentGateway.API.Application.Commands
 {
     public class CreateChargeCommand : IRequest<string>
     {
-        public Guid MerchantId { get; set; }
         public decimal Amount { get; set; }
         public Currency CurrencyCode { get; set; }
 
         public Brand Brand { get; set; }
-        public byte ExpiryMonth { get; set; }
+        public int ExpiryMonth { get; set; }
         public int ExpiryYear { get; set; }
         public string CardNumber { get; set; }
         public int CVV { get; set; }

@@ -13,6 +13,8 @@ namespace PaymentGateway.Infrastructure
 
         public DbSet<Card> Cards { get; set; }
 
+        public DbSet<Merchant> Merchants { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseSqlServer(
@@ -21,8 +23,7 @@ namespace PaymentGateway.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Charge>()
-               .HasKey(p => new { p.MerchantId, p.Id });
+            //ToDo: add some indices here to facilitate querying on most common fields such as merchant id etc
         }
     }
 }

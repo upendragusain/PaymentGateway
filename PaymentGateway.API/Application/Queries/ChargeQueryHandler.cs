@@ -17,7 +17,11 @@ namespace PaymentGateway.API.Application.Queries
 
         public async Task<PaymentDetail> Handle(ChargeQuery request, CancellationToken cancellationToken)
         {
-            var charge = await _chargeRepository.Get(request.MerchantId, request.Id);
+            var charge = await _chargeRepository.Get(request.Id);
+
+            if (charge == null)
+                return null;
+
             return new PaymentDetail()
             {
                 Id = charge.Id,

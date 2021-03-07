@@ -27,36 +27,52 @@ namespace PaymentGateway.API.Filters
                 context.Exception,
                 context.Exception.Message);
 
-            if (env.IsDevelopment())
+            if (context.Exception.GetType() == typeof(PaymentGatewayDomainException))
             {
                 var problemDetails = new ValidationProblemDetails()
                 {
                     Instance = context.HttpContext.Request.Path,
+                    Status = StatusCodes.Status400BadRequest,
                     Detail = "Please refer to the errors property for additional details."
                 };
 
-                if (context.Exception.GetType() == typeof(PaymentGatewayDomainException))
-                {
-                    problemDetails.Status = StatusCodes.Status400BadRequest;
-                    problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
-                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                }
-                else
-                {
-                    problemDetails.Status = StatusCodes.Status500InternalServerError;
-                    problemDetails.Title = "Please try again later";
-                    problemDetails.Errors.Add("Exception", new string[] { context.Exception.Message.ToString() });
-                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                }
+                problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
 
                 context.Result = new BadRequestObjectResult(problemDetails);
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
             else
             {
+                var json = new JsonErrorResponse
+                {
+                    Messages = new[] { "An error occur.Try it again." }
+                };
+
+                if (env.IsDevelopment())
+                {
+                    json.DeveloperMessage = context.Exception;
+                }
+
+                context.Result = new InternalServerErrorObjectResult(json);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
-
             context.ExceptionHandled = true;
+        }
+
+        private class JsonErrorResponse
+        {
+            public string[] Messages { get; set; }
+
+            public object DeveloperMessage { get; set; }
+        }
+
+        private class InternalServerErrorObjectResult : ObjectResult
+        {
+            public InternalServerErrorObjectResult(object error)
+                : base(error)
+            {
+                StatusCode = StatusCodes.Status500InternalServerError;
+            }
         }
     }
 

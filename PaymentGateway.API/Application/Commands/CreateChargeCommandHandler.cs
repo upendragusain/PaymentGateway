@@ -35,8 +35,7 @@ namespace PaymentGateway.API.Application.Commands
             var charge = new Charge(request.Amount,
                                     request.CurrencyCode,
                                     card,
-                                    request.IdempotencyKey,
-                                    request.MerchantId);
+                                    request.IdempotencyKey);
 
             // make call to acquiring bank
             var paymentResponse = await _aquiringBankApiService.RequestPayment(
