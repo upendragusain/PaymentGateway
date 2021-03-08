@@ -17,8 +17,6 @@ namespace PaymentGateway.Infrastructure
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer(
-            //    @"Server=(localdb)\mssqllocaldb;Database=Reservations;Integrated Security=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

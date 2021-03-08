@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PaymentGateway.API.Application.Commands;
 using PaymentGateway.API.Application.Queries;
-using PaymentGateway.Infrastructure;
 using System;
 using System.Net;
 using System.Threading.Tasks;

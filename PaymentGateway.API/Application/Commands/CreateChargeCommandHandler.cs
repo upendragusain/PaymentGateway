@@ -25,6 +25,7 @@ namespace PaymentGateway.API.Application.Commands
 
         public async Task<string> Handle(CreateChargeCommand request, CancellationToken cancellationToken)
         {
+            //Todo: check if card already exists, else would create new card with same details each time!
             var card = new Card(request.Brand,
                                 request.ExpiryMonth,
                                 request.ExpiryYear,
@@ -53,8 +54,6 @@ namespace PaymentGateway.API.Application.Commands
 
             //persist to db
             await _chargeRepository.Create(charge);
-
-            //return response
             return paymentResponse.Status;
         }
     }
