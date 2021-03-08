@@ -16,7 +16,7 @@ namespace PaymentGateway.API.Application.Validations
             RuleFor(command => command.ExpiryMonth).InclusiveBetween(1, 12);
             RuleFor(command => command.ExpiryYear).NotEmpty().Must(_ => _ >= DateTime.UtcNow.Year)
                 .WithMessage("Please specify a valid card expiration year");
-            RuleFor(command => command.CardNumber).NotEmpty().Length(12, 19);
+            RuleFor(command => command.CardNumber).CreditCard();
             RuleFor(command => command.CVV).NotEmpty();
             RuleFor(command => command.City).NotEmpty();
             RuleFor(command => command.State).NotEmpty();
