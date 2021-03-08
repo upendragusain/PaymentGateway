@@ -7,7 +7,7 @@ namespace PaymentGateway.Domain
 {
     /*
      * Assumptions: 
-     * The aim is just to persist the decryped CARD data into db to be PCI compliant
+     * The aim is just to persist the encrypted CARD data into db to be PCI compliant
      * To achieve this a simple (non-production ready) solution is to use AES encryption with a symmetric key
      * Also assuming that we won't be sharing the key as encrytions here is just for PCI compliance
      * If Howeever we were to send encrypted data over wire(https) to the bank for processing then we will have to think about

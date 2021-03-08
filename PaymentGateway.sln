@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Test", "Paym
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Infrastructure", "PaymentGateway.Infrastructure\PaymentGateway.Infrastructure.csproj", "{B8CB9F50-FE15-46A7-B5D8-61C32D580FF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Benchmarks", "PaymentGateway.Benchmarks\PaymentGateway.Benchmarks.csproj", "{2D306337-16BD-4BFB-A2CE-9118A785CD8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentGateway.Benchmarks", "PaymentGateway.Benchmarks\PaymentGateway.Benchmarks.csproj", "{2D306337-16BD-4BFB-A2CE-9118A785CD8C}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FA57CEFA-DA04-4270-8708-37901DE94748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{2D306337-16BD-4BFB-A2CE-9118A785CD8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D306337-16BD-4BFB-A2CE-9118A785CD8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D306337-16BD-4BFB-A2CE-9118A785CD8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA57CEFA-DA04-4270-8708-37901DE94748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA57CEFA-DA04-4270-8708-37901DE94748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA57CEFA-DA04-4270-8708-37901DE94748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA57CEFA-DA04-4270-8708-37901DE94748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

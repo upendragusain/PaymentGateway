@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  paymentgateway.api:
+    image: ${DOCKER_REGISTRY-}paymentgatewayapi
+    build:
+      context: .
+      dockerfile: PaymentGateway.API/Dockerfile
+    depends_on:
+        - db
+
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+        SA_PASSWORD: "Passw0rd@01"
+        ACCEPT_EULA: "Y"
